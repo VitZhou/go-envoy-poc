@@ -9,12 +9,12 @@ import (
 )
 
 type HttpProxy struct {
-	DestHost string
-	DestPort int
+	TargetHost string
+	TargetPort int
 }
 
 func (httpProxy *HttpProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	remote, err := url.Parse("http://" + httpProxy.DestHost + ":" + strconv.Itoa(httpProxy.DestPort))
+	remote, err := url.Parse("http://" + httpProxy.TargetHost + ":" + strconv.Itoa(httpProxy.TargetPort))
 	if err != nil {
 		log.Fatalf("创建代理失败%s", err)
 	}

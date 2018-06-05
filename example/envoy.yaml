@@ -1,0 +1,7 @@
+name: envoy-test
+address:
+  host: 0.0.0.0
+  port: 9966
+route:
+  host: 127.0.0.1
+  port: 9955
