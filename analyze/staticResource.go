@@ -1,12 +1,24 @@
 package analyze
 
 type StaticResources struct {
-	Name    string        `yaml:"name"`
-	Address SocketAddress `yaml:"address"`
-	Route SocketAddress `yaml:"route"`
+	Name    string
+	Address SocketAddress
+	Routes   []Route
+	Clusters []Cluster
+}
+
+type Route struct {
+	Prefix string
+	Cluster string
+}
+
+type Cluster struct {
+	Name string
+	Host string
+	Port int
 }
 
 type SocketAddress struct {
-	Host string `yaml:"host"`
-	Port int    `yaml:"port"`
+	Host string
+	Port int
 }

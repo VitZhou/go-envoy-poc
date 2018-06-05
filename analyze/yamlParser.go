@@ -8,12 +8,12 @@ import (
 
 func Parser(path string) (*StaticResources, error) {
 	sr := StaticResources{}
-	b, e := ioutil.ReadFile(path)
+	byte, e := ioutil.ReadFile(path)
 	if e != nil {
 		log.Fatalf("读取文件错误:%s,文件路径:%s", e, path)
 		return nil, e
 	}
-	err := yaml.Unmarshal(b, &sr)
+	err := yaml.Unmarshal(byte, &sr)
 	if err != nil {
 		return nil, err
 	}
