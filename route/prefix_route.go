@@ -3,7 +3,7 @@ package route
 import (
 	"go-envoy-poc/analyze"
 	"strings"
-	"log"
+	"go-envoy-poc/log"
 )
 
 type PrefixRoute struct {
@@ -21,12 +21,12 @@ func NewPrefixRoute(routes []analyze.Route, clusters []analyze.Cluster) *PrefixR
 	return route
 }
 
-func (this *PrefixRoute) Filter(url string) *Target {
-	for _, v := range this.Routes {
+func (prefixRoute *PrefixRoute) Filter(url string) *Target {
+	for _, v := range prefixRoute.Routes {
 		if strings.HasPrefix(url, v.Prefix) {
-			cluster,exists := this.clusterMap[v.Cluster]
+			cluster,exists := prefixRoute.clusterMap[v.Cluster]
 			if !exists{
-				log.Fatalf("路由规则没有相匹配的集群,集群%s", v.Cluster)
+				log.Error.Printf("路由规则没有相匹配的集群,集群%s", v.Cluster)
 				return nil
 			}
 			return &Target{Host: cluster.Host, Port: cluster.Port}
