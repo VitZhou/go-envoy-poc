@@ -1,4 +1,4 @@
-package route
+package addr
 
 type Target struct {
 	Host string

@@ -25,10 +25,11 @@ func NewHttpProxy(resources *analyze.StaticResources) *HttpProxy {
 
 func (httpProxy *HttpProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
-	target := httpProxy.route.Filter(path)
-	if target == nil{
+	cluster := httpProxy.route.Filter(path)
+	if cluster == nil{
 		log.Error.Fatal("路由配置错误")
 	}
+	target := cluster.GetAddress()
 	remote, err := url.Parse("http://" + target.Host + ":" + strconv.Itoa(target.Port))
 	if err != nil {
 		log.Error.Fatalf("创建代理失败%s", err)

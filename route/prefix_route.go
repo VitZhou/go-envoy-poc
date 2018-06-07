@@ -21,7 +21,7 @@ func NewPrefixRoute(routes []analyze.Route, clusters []analyze.Cluster) *PrefixR
 	return route
 }
 
-func (prefixRoute *PrefixRoute) Filter(url string) *Target {
+func (prefixRoute *PrefixRoute) Filter(url string) *analyze.Cluster {
 	for _, v := range prefixRoute.Routes {
 		if strings.HasPrefix(url, v.Prefix) {
 			cluster,exists := prefixRoute.clusterMap[v.Cluster]
@@ -29,7 +29,7 @@ func (prefixRoute *PrefixRoute) Filter(url string) *Target {
 				log.Error.Printf("路由规则没有相匹配的集群,集群%s", v.Cluster)
 				return nil
 			}
-			return &Target{Host: cluster.Host, Port: cluster.Port}
+			return &cluster
 		}
 	}
 	return nil

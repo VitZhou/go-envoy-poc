@@ -1,6 +1,7 @@
 package route
 
+import "go-envoy-poc/analyze"
 
 type Route interface {
-	Filter(url string) *Target
+	Filter(url string) *analyze.Cluster
 }

@@ -1,8 +1,10 @@
 package analyze
 
+import "go-envoy-poc/analyze/addr"
+
 type StaticResources struct {
 	Name    string
-	Address SocketAddress
+	Address addr.SocketAddress
 	Routes   []Route
 	Clusters []Cluster
 }
@@ -12,13 +14,5 @@ type Route struct {
 	Cluster string
 }
 
-type Cluster struct {
-	Name string
-	Host string
-	Port int
-}
 
-type SocketAddress struct {
-	Host string
-	Port int
-}
+
