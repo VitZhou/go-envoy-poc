@@ -7,11 +7,12 @@ import (
 	"net/http"
 	"strconv"
 	"go-envoy-poc/log"
+	"go-envoy-poc/analyze/health_check/filter"
 )
 
 var (
 	configPath string
-	logPath string
+	logPath    string
 	RootCmd    = &cobra.Command{
 		Use:   "envoy",
 		Short: "envoy",
@@ -32,14 +33,32 @@ func newHttpProxy(path string) {
 	if err != nil {
 		log.Error.Fatalf("解析yaml文件错误%s", err)
 	}
+	if len(staticResources.Clusters) <= 0 {
+		log.Error.Fatal("至少配置一个集群")
+	}
 
-	h := proxy.NewHttpProxy(staticResources)
 	port := staticResources.Address.Port
 	if port <= 0 {
 		log.Error.Fatal("port必须大于0")
 	}
+
+	h := proxy.NewHttpProxy(staticResources)
+	newHealthCheckFilter(staticResources)
+
 	err = http.ListenAndServe(":"+strconv.Itoa(port), h)
 	if err != nil {
 		log.Error.Fatalln("ListenAndServe:", err)
+	}
+}
+
+func newHealthCheckFilter(staticResources *analyze.StaticResources) {
+	check := staticResources.HealthCheck
+	if check.Cluster != "" && check.Path != "" {
+		for _, v := range staticResources.Clusters {
+			if v.Name == check.Cluster {
+				f := filter.Filter{Cluster: v, HealthCheck: check}
+				f.Filter()
+			}
+		}
 	}
 }

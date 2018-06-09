@@ -2,24 +2,27 @@ package load_balance
 
 import (
 	"sync/atomic"
-	"sync"
 	"go-envoy-poc/analyze/addr"
+	"go-envoy-poc/log"
 )
 
 type Balancer interface {
-	Balancing(addr []addr.SocketAddress) *addr.Target
+	Balancing(addrs []addr.SocketAddress) *addr.Target
 }
 
-var i int32 = 0
-var m sync.Mutex
 
-func Balancing(addrs []addr.SocketAddress) *addr.Target {
-	m.Lock()
-	if atomic.LoadInt32(&i) >= int32(len(addrs)) {
-		atomic.StoreInt32(&i, 0)
+type RoundRobin struct {
+	i int32
+}
+
+func (round *RoundRobin)Balancing(addrs []addr.SocketAddress) *addr.Target {
+	if addrs == nil || len(addrs) <= 0{
+		log.Error.Fatal("代理地址没有正确配置")
 	}
-	m.Unlock()
-	address := addrs[atomic.LoadInt32(&i)]
-	atomic.AddInt32(&i, 1)
+	if atomic.LoadInt32(&round.i) >= int32(len(addrs)) {
+		atomic.StoreInt32(&round.i, 0)
+	}
+	address := addrs[atomic.LoadInt32(&round.i)]
+	atomic.AddInt32(&round.i, 1)
 	return &addr.Target{Host: address.Host, Port: address.Port}
 }

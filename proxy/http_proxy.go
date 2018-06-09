@@ -19,6 +19,9 @@ type HttpProxy struct {
 func NewHttpProxy(resources *analyze.StaticResources) *HttpProxy {
 	routes := resources.Routes
 	clusters := resources.Clusters
+	for k := range clusters {
+		clusters[k].Init()
+	}
 	prefixRoute := route.NewPrefixRoute(routes, clusters)
 	return &HttpProxy{StaticResources: resources, route: prefixRoute}
 }
