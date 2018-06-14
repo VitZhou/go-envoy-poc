@@ -3,7 +3,7 @@ package load_balance
 import (
 	"go-envoy-poc/analyze/addr"
 	"go-envoy-poc/log"
-	"k8s.io/apimachinery/pkg/util/rand"
+	"math/rand"
 )
 
 type RandomBalancer struct {
