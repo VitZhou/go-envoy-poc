@@ -4,10 +4,10 @@ import (
 	"github.com/spf13/cobra"
 	"go-envoy-poc/proxy"
 	"go-envoy-poc/analyze"
+	"net/http"
+	"strconv"
 	"go-envoy-poc/log"
 	"go-envoy-poc/analyze/health_check/filter"
-	"strconv"
-	"net/http"
 )
 
 var (
@@ -43,10 +43,9 @@ func newHttpProxy(path string) {
 	}
 	if staticResources.Protocol == "dubbo" {
 		proxy.NewSocketProxy(staticResources)
-	}else {
-		h := proxy.NewHttpProxy(staticResources)
+	} else {
+		h := proxy.NewReverseProxy(staticResources)
 		newHealthCheckFilter(staticResources)
-
 		err = http.ListenAndServe(":"+strconv.Itoa(port), h)
 		if err != nil {
 			log.Error.Fatalln("ListenAndServe:", err)
