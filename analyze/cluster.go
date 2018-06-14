@@ -64,7 +64,6 @@ func (cluster *Cluster) delAddress(del addr.SocketAddress) {
 	for k, v := range cluster.validHosts {
 		if v.Host == del.Host && v.Port == del.Port {
 			cluster.validHosts = append(cluster.validHosts[:k], cluster.validHosts[k+1:]...)
-			log.Info.Println(cluster.validHosts)
 			return
 		}
 	}
@@ -94,8 +93,9 @@ func (cluster *Cluster) initBalancer() {
 
 func (cluster *Cluster) GetAddress() *addr.Target {
 	cluster.m.RLock()
-	log.Info.Println("aaaa", cluster.validHosts)
+	log.Info.Println("当前存活实例:", cluster.validHosts)
 	balancing := cluster.b.Balancing(cluster.validHosts)
+	log.Info.Println("负载器筛选结果:", balancing)
 	cluster.m.RUnlock()
 	return balancing
 }
