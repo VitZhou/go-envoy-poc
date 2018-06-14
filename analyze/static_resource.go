@@ -7,6 +7,7 @@ import (
 
 type StaticResources struct {
 	Name    string
+	Protocol string
 	Address addr.SocketAddress
 	Routes   []Route
 	Clusters []Cluster
