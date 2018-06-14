@@ -18,34 +18,30 @@ type HttpProxy struct {
 	route           route.Route
 }
 
-func NewHttpProxy(resources *analyze.StaticResources) *HttpProxy {
+func NewReverseProxy(resources *analyze.StaticResources) *httputil.ReverseProxy  {
 	routes := resources.Routes
 	clusters := resources.Clusters
 	for k := range clusters {
 		clusters[k].Init()
 	}
 	prefixRoute := route.NewPrefixRoute(routes, clusters)
-	return &HttpProxy{StaticResources: resources, route: prefixRoute}
+	reverseProxy := HttpProxy{StaticResources: resources, route: prefixRoute}
+	return reverseProxy.newSingleHostReverseProxy()
 }
 
-func (httpProxy *HttpProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	path := r.URL.Path
-	cluster := httpProxy.route.Filter(path)
-	if cluster == nil {
-		log.Error.Fatal("路由配置错误")
-	}
-	target := cluster.GetAddress()
-	remote, err := url.Parse("http://" + target.Host + ":" + strconv.Itoa(target.Port))
-	if err != nil {
-		log.Error.Fatalf("创建代理失败%s", err)
-	}
-	proxy := newSingleHostReverseProxy(remote)
-	proxy.ServeHTTP(w, r)
-}
-
-func newSingleHostReverseProxy(target *url.URL) *httputil.ReverseProxy {
-	targetQuery := target.RawQuery
+func (httpProxy *HttpProxy)newSingleHostReverseProxy() *httputil.ReverseProxy {
 	director := func(req *http.Request) {
+		path := req.URL.Path
+		cluster := httpProxy.route.Filter(path)
+		if cluster == nil {
+			log.Error.Fatal("路由配置错误")
+		}
+		address := cluster.GetAddress()
+		target, err := url.Parse("http://" + address.Host + ":" + strconv.Itoa(address.Port))
+		if err != nil {
+			log.Error.Fatalf("创建代理失败%s", err)
+		}
+		targetQuery := target.RawQuery
 		req.URL.Scheme = target.Scheme
 		req.URL.Host = target.Host
 		req.URL.Path = singleJoiningSlash(target.Path, req.URL.Path)

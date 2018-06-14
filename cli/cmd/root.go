@@ -42,9 +42,8 @@ func newHttpProxy(path string) {
 		log.Error.Fatal("port必须大于0")
 	}
 
-	h := proxy.NewHttpProxy(staticResources)
+	h := proxy.NewReverseProxy(staticResources)
 	newHealthCheckFilter(staticResources)
-
 	err = http.ListenAndServe(":"+strconv.Itoa(port), h)
 	if err != nil {
 		log.Error.Fatalln("ListenAndServe:", err)

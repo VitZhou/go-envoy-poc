@@ -51,7 +51,6 @@ func (cluster *Cluster) addAddress(add addr.SocketAddress) {
 	}
 	cluster.m.Lock()
 	cluster.validHosts = append(cluster.validHosts, add)
-	log.Info.Println("add2", cluster.validHosts)
 	cluster.m.Unlock()
 }
 
