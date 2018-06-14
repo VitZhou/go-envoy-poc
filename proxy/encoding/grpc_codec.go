@@ -1,4 +1,4 @@
-package grpcp
+package encoding
 
 import (
 	"github.com/golang/protobuf/proto"

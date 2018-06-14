@@ -42,6 +42,7 @@ func (httpProxy *HttpProxy)newSingleHostReverseProxy() *httputil.ReverseProxy {
 			log.Error.Fatalf("创建代理失败%s", err)
 		}
 		targetQuery := target.RawQuery
+
 		req.URL.Scheme = target.Scheme
 		req.URL.Host = target.Host
 		req.URL.Path = singleJoiningSlash(target.Path, req.URL.Path)
